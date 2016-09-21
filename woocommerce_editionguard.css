@@ -1,0 +1,16 @@
+.woocommerce_options_panel input.button.upload_file_button_edition_guard{
+    background-color: #FEFEFE !important;
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAQ0lEQVQYV3WPUQoAMAhC1+E6tYdrFBgiW185X7biSAGolpkZfN6GJg1CA7ip0CYo+FzxBTqeE/7J1qGAXsTEAdxQfQHJTymZe4oqiAAAAABJRU5ErkJggg==") !important;
+    background-position: 8px 7px !important;
+    background-repeat: no-repeat !important;
+    padding-left: 20px;
+    margin-left:0;
+    }
+
+.form-field-drm{
+	display:none;
+}
+
+.use_button_edition_guard.button{
+    background: #FEFEFE !important;
+}
