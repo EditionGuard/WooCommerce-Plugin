@@ -7,6 +7,13 @@ Version: 1.1.4
 Author: EditionGuard Dev Team <support@editionguard.com>
 Author URI: http://www.editionguard.com
 */
+
+include( plugin_dir_path( __FILE__ ) . 'woo_eg_api.php');
+
+$email = get_option('woo_eg_email');
+$password = get_option('woo_eg_password');
+$api = new Woo_eg_api($email, $password);
+
 if (@$_REQUEST["woo_ed_resource_id"])
 	{
 	?><script>parent.editionguard_response_ready('<?php echo $_REQUEST["woo_ed_resource_id"] ?>')</script><?php
@@ -222,12 +229,12 @@ function woo_eg_options()
     <ul>
     <li>
     <label for="woo_eg_email">Email</label><br />
-    <label for="woo_eg_secret">Shared Secret</label><br />
+    <label for="woo_eg_password">Password</label><br />
     </li>
     <li>
 
     <input type="text" name="woo_eg_email" <?php if (get_option('woo_eg_email')) echo 'value="'.get_option('woo_eg_email').'"' ?> /><br />
-    <input type="text" name="woo_eg_secret" <?php if (get_option('woo_eg_secret')) echo 'value="'.get_option('woo_eg_secret').'"' ?> /><br />
+    <input type="text" name="woo_eg_password" <?php if (get_option('woo_eg_password')) echo 'value="'.get_option('woo_eg_password').'"' ?> /><br />
     </li>
     </ul>
     <a href="http://www.editionguard.com/?action=trial">Don't have an EditionGuard account? Get started with a free 30 day trial</a><br/><br/>
@@ -248,4 +255,7 @@ function woo_eg_curl_it($uri, $data, $method = 'POST')
 	curl_close($ch);
 	return $ret;
 	}
+        
+        
+        
 ?>
