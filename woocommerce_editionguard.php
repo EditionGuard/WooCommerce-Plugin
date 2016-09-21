@@ -11,7 +11,7 @@ Author URI: http://www.editionguard.com
 include( plugin_dir_path( __FILE__ ) . 'woo_eg_api.php');
 
 $email = get_option('woo_eg_email');
-$password = get_option('woo_eg_secret');
+$secret = get_option('woo_eg_secret');
 $api = new Woo_eg_api($email, $secret);
 
 if (@$_REQUEST["woo_ed_resource_id"])
