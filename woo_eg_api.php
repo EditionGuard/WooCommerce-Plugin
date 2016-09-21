@@ -14,19 +14,19 @@ class Woo_eg_api {
 
     public $token;
 
-    public function __construct($email, $password) {
+    public function __construct($email, $secret) {
         $curl = curl_init();
         
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://staging.editionguard.com/api/v2/obtain-auth-token",
+            CURLOPT_URL => "https://staging.editionguard.com/api/v2/obtain-auth-token-by-shared-secret ",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 30,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => array('email' => $email, 'password' => $password),
+            CURLOPT_POSTFIELDS => array('email' => $email, 'shared_secret' => $secret),
         ));
 
         $response = json_decode(curl_exec($curl));
