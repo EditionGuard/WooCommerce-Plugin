@@ -75,5 +75,42 @@ class Woo_eg_api {
             return json_decode($response)->results;
         }
     }
+    
+    /**
+     * Create new transaction
+     * @param string book's resource_id
+     * @return object Transactions resource
+     */
+    
+    public function createTransaction($resoureId) {
+        $curl = curl_init();
+
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://staging.editionguard.com:443/api/v2/transaction",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => array('resource_id' => $resoureId),
+            CURLOPT_HTTPHEADER => array(
+                "authorization: Token $this->token"
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+            echo "cURL Error #:" . $err;
+        } else {
+            $this->token = json_decode($response)->token;
+        }
+    }
 
 }

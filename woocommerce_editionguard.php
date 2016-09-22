@@ -54,6 +54,8 @@ if ($show_edition_guard) {
     $on = get_post_meta($_GET["post"], "_use_edition_guard", true);
     $r_id = get_post_meta($_GET["post"], "_eg_resource_id", true);
     $title = get_post_meta($_GET["post"], "_use_edition_guard_title");
+    $drmType = get_post_meta($_GET["post"], "_eg_drm_type");
+    
     if (($email != "") && ($hash != "")) {
         $data = array("email" => $email, "nonce" => $nonce, "hash" => $hash);
         $api = new Woo_eg_api($email, $secret);
@@ -70,7 +72,8 @@ if ($show_edition_guard) {
         'on' => $on,
         'r_id' => $r_id,
         'title' => $title,
-        'library' => $library
+        'library' => $library,
+        'drm_type' => $drmType
     );
     wp_localize_script('woocommerce_editionguard', 'woo_eg', $translation_array);
 }
@@ -92,6 +95,8 @@ function woocommerce_ed_product_save($post_id, $post) {
 
     if (!empty($_REQUEST['_eg_resource_id']))
         update_post_meta($post_id, '_eg_resource_id', stripslashes($_REQUEST['_eg_resource_id']));
+    if (!empty($_REQUEST['_eg_drm_type']))
+        update_post_meta($post_id, '_eg_drm_type', stripslashes($_REQUEST['_eg_drm_type']));
 
     update_post_meta($post_id, '_use_edition_guard', stripslashes($_REQUEST['_use_edition_guard']));
 
@@ -105,16 +110,26 @@ add_filter("woocommerce_get_item_downloads", "woo_eg_get_item_downloads", 10, 3)
 function woo_eg_get_item_downloads($files, $item, $order) {
 
     if (get_post_meta($item['product_id'], "_use_edition_guard", true)) {
-        $linkURL = "http://acs4.editionguard.com/fulfillment/URLLink.acsm";
-        $dateval = time();
-        $orderSource = get_option('woo_eg_email');
-        $sharedSecret = get_option('woo_eg_secret');
+        $email = get_option('woo_eg_email');
+        $secret = get_option('woo_eg_secret');
         $resourceId = get_post_meta($item['product_id'], "_eg_resource_id", true);
-        $transactionId = $order->id;
+        $drmType = get_post_meta($item['product_id'], "_eg_drm_type", true);
+        $bookData = array();
+        
+        if($drmType == 'Social DRM') {
+            $bookData['watermark_name'] = "$order->billing_first_name "
+                    . "$order->billing_last_name";
+            $bookData['watermark_email'] = $order->billing_email;
+            $bookData['watermark_phone'] = $order->billing_phone;
+        }
+        
+        
+        $api = new Woo_eg_api($email, $secret);
+        
+        
         for ($i = 1; $i <= $item['qty']; $i++) {
-            $URL = "action=enterorder&ordersource=" . urlencode($orderSource) . "&orderid=" . urlencode($transactionId . "-" . $item['product_id'] . "-" . $i) . "&resid=" . urlencode($resourceId) . "&dateval=" . urlencode($dateval) . "&gblver=4";
-            $URL = $linkURL . "?" . $URL . "&auth=" . hash_hmac("sha1", $URL, base64_decode($sharedSecret));
-            $files[$i] = array("download_url" => $URL, "name" => "Click here");
+            $transaction = $api->createTransaction($resourceId);
+            $files[$i] = array("download_url" => $transaction[''], "name" => "Click here");
         }
     }
 

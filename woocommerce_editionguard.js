@@ -12,20 +12,21 @@ jQuery(document).ready(function() {
         
     var woo_fields = jQuery('.options_group.show_if_downloadable').html();
 
-    var p1 = '<p class="form-field-both"><input type="checkbox" ' + checked + 'name="_use_edition_guard" style="width:auto" onclick="use_editionguard_drm_trigger(this)">&nbsp;Use EditionGuard eBook DRM</p><p class="form-field-drm"><label>Currently Used eBook:</label>'+current+'</p>';
+    var p1 = '<p class="form-field-both"><input type="checkbox" ' + checked + 'name="_use_edition_guard" style="width:auto" onclick="use_editionguard_drm_trigger(this)"/>&nbsp;Use EditionGuard eBook DRM</p><p class="form-field-drm"><label>Currently Used eBook:</label>'+current+'</p>';
 
     if (woo_eg.r_id == "")
         var value = '';
     else
         value = 'value="' + woo_eg.r_id + '" ';
     var input = '<input type="hidden" name="_eg_resource_id" id="_eg_resource_id" ' + value + 'placeholder="EditionGuard Resource ID" />'
-               +'<input type="hidden" name="_eg_title" id="_eg_title"/>';
+               +'<input type="hidden" name="_eg_title" id="_eg_title"/>'
+               +'<input type="hidden" name="_eg_drm_type" id="_eg_drm_type" value="' + woo_eg.drm_type+'"/>';
     var p2 = input;
 
     var label = '<label for="_file_paths">Choose eBook</label>';
     select = '<select style="width:410px" id="ebook_library">';
     if (woo_eg.library) jQuery.each(woo_eg.library, function(k, v) {
-        select += '<option title="' + v.title + '" value="' + v.resource + '">' + v.title + ' (' + v.resource + ')' + '</option>';
+        select += '<option title="' + v.title + '" value="' + v.resource_id + '" data-drm-type="'+v.drm_type+'">' + v.title + ' (' + v.resource_id + ')' + '</option>';
     })
     select += '</select>';
     var button = '<input type="button" onclick="use_ebook()" class="use_button_edition_guard button" value="Use">';
@@ -49,11 +50,8 @@ jQuery(document).ready(function() {
         jQuery('.options_group.show_if_downloadable .form-field').hide();
         jQuery('.options_group.show_if_downloadable .form-field-drm').show();
     }
-    //jQuery(".upload_file_button").before('<input type="button" value="Choose a file" class="upload_file_button_edition_guard button" onclick="use_editionguard_drm()">');
-    //jQuery.get(woo_eg.plugin_path+"woocommerce_editionguard_form.php",function(data) {
-    //alert(data);
-    //});
-})
+    
+});
 var woo_eg_old_click_handler;
 function use_ebook()
 {
@@ -61,6 +59,7 @@ function use_ebook()
     jQuery('#_eg_resource_id').val(resource_id);
     jQuery('#_current_ebook').html(jQuery('#ebook_library option:selected').text());
     jQuery('#_eg_title').val(jQuery('#ebook_library option:selected').attr('title'));
+    jQuery('#_eg_drm_type').val(jQuery('#ebook_library option:selected').attr('data-drm-type'));
     alert("eBook selection updated. Please update the product to save your changes.");
     
 }
