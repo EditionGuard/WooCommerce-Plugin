@@ -30,7 +30,7 @@ jQuery(document).ready(function() {
     })
     select += '</select>';
     var button = '<input type="button" onclick="use_ebook()" class="use_button_edition_guard button" value="Use">';
-    var p3 = '<p class="form-field-drm"><b>Use an existing eBook uploaded to your EditionGuard account</b></p><p class="form-field-drm">' + label + select + button + '</p><p class="form-field-drm"><b><i>--- OR ---</i></b></p>';
+    var p3 = '<p class="form-field-drm"><b>Use an existing eBook uploaded to your EditionGuard account</b></p><p class="form-field-drm">' + label + select + button + '</p>';
 
     var img = '<img class="eg_ajax" style="padding:2px 10px;display:none" src="' + woo_eg.plugin_dir + 'ajax-loader.gif" />';
     var label = '<label for="_file_paths">Choose eBook File</label>';
@@ -38,12 +38,9 @@ jQuery(document).ready(function() {
         var value = '';
     else
         value = 'value="' + woo_eg.r_id + '" ';
-    var file_input = '<input type="button" onclick="use_editionguard_drm()" class="upload_file_button_edition_guard button" value="Choose a file">';
-    var p4 = '<p class="form-field-drm"><b>Upload an eBook From My Computer</b></p><p class="form-field-drm"><label for="_use_edition_guard">eBook File Title: </label><input type="text" id="use_edition_guard_title" name="_use_edition_guard_title" style="width:auto"></p>';
 
-    var p5 = '<p class="form-field-drm">' + label + file_input + img + '</p>';
 
-    jQuery('.options_group.show_if_downloadable').html(p1 + woo_fields + p2 + p3 + p4 + p5);
+    jQuery('.options_group.show_if_downloadable').html(p1 + woo_fields + p2 + p3 /*+ p4 + p5*/);
 
     if (woo_eg.on)
     {
