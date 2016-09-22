@@ -125,11 +125,11 @@ function woo_eg_get_item_downloads($files, $item, $order) {
         
         
         $api = new Woo_eg_api($email, $secret);
-        
-        
+       
         for ($i = 1; $i <= $item['qty']; $i++) {
-            $transaction = $api->createTransaction($resourceId);
-            $files[$i] = array("download_url" => $transaction[''], "name" => "Click here");
+            $transaction = $api->createTransaction($resourceId, $bookData);
+            
+            $files[$i] = array("download_url" => $transaction->download_link, "name" => "Click here");
         }
     }
 
@@ -140,40 +140,28 @@ function woo_eg_get_item_downloads($files, $item, $order) {
 add_filter("woocommerce_get_downloadable_file_urls", "woo_eg_process_downloadable_file_urls", 10, 4);
 
 function woo_eg_process_downloadable_file_urls($file_urls, $product_id, $variation_id, $item) {
-    global $woocommerce;
-    if (get_post_meta($product_id, "_use_edition_guard", true)) {
-        $linkURL = "http://acs4.editionguard.com/fulfillment/URLLink.acsm";
-        $dateval = time();
-        $orderSource = get_option('woo_eg_email');
-        $sharedSecret = get_option('woo_eg_secret');
-        $resourceId = get_post_meta($product_id, "_eg_resource_id", true);
-
-        $item_id = $variation_id > 0 ? $variation_id : $product_id;
-
-        if (!empty($_REQUEST['post_ID']))
-            $transactionId = $_REQUEST['post_ID'];
-        if (!empty($_REQUEST['order']))
-            $transactionId = $_REQUEST['order'];
-        if (!empty($_REQUEST['order_id']))
-            $transactionId = $_REQUEST['order_id'];
-        if (isset($woocommerce->woocommerce_email->emails)) {
-            $id = $woocommerce->woocommerce_email->emails['WC_Email_New_Order']->object->id;
-            if (!empty($id))
-                $transactionId = $id;
+    if (get_post_meta($item['product_id'], "_use_edition_guard", true)) {
+        $email = get_option('woo_eg_email');
+        $secret = get_option('woo_eg_secret');
+        $resourceId = get_post_meta($item['product_id'], "_eg_resource_id", true);
+        $drmType = get_post_meta($item['product_id'], "_eg_drm_type", true);
+        $bookData = array();
+        
+        if($drmType == 'Social DRM') {
+            $order = new WC_Order($_REQUEST['order']);
+            $bookData['watermark_name'] = "$order->billing_first_name "
+                    . "$order->billing_last_name";
+            $bookData['watermark_email'] = $order->billing_email;
+            $bookData['watermark_phone'] = $order->billing_phone;
         }
-
-        // Transaction Id is still empty, we defer to the email order items table filter for proper replacement.
-        if (empty($transactionId)) {
-            for ($i = 1; $i <= $item['qty']; $i++) {
-                $URL = "action=enterorder&ordersource=" . urlencode($orderSource) . "&orderid=%orderid%-" . urlencode($item_id . "-" . $i) . "&resid=" . urlencode($resourceId) . "&dateval=" . urlencode($dateval) . "&gblver=4";
-                $file_urls["Click here #" . $i] = $URL;
-            }
-        } else {
-            for ($i = 1; $i <= $item['qty']; $i++) {
-                $URL = "action=enterorder&ordersource=" . urlencode($orderSource) . "&orderid=" . urlencode($transactionId . "-" . $item_id . "-" . $i) . "&resid=" . urlencode($resourceId) . "&dateval=" . urlencode($dateval) . "&gblver=4";
-                $URL = $linkURL . "?" . $URL . "&auth=" . hash_hmac("sha1", $URL, base64_decode($sharedSecret));
-                $file_urls["Click here #" . $i] = $URL;
-            }
+        
+        
+        $api = new Woo_eg_api($email, $secret);
+        
+        
+        for ($i = 1; $i <= $item['qty']; $i++) {
+            $transaction = $api->createTransaction($resourceId);
+            $files[$i] = array("download_url" => $transaction['download_link'], "name" => "Click here");
         }
     }
     return $file_urls;

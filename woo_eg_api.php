@@ -78,11 +78,13 @@ class Woo_eg_api {
     
     /**
      * Create new transaction
-     * @param string book's resource_id
+     * @param string $resourceId book's resource_id
+     * @param array $bookData data of e-book
      * @return object Transactions resource
      */
     
-    public function createTransaction($resoureId) {
+    public function createTransaction($resoureId, $bookData = array()) {
+        $bookData['resource_id'] = $resoureId;
         $curl = curl_init();
 
 
@@ -94,7 +96,7 @@ class Woo_eg_api {
             CURLOPT_TIMEOUT => 30,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => array('resource_id' => $resoureId),
+            CURLOPT_POSTFIELDS => $bookData,
             CURLOPT_HTTPHEADER => array(
                 "authorization: Token $this->token"
             ),
@@ -109,7 +111,7 @@ class Woo_eg_api {
         if ($err) {
             echo "cURL Error #:" . $err;
         } else {
-            $this->token = json_decode($response)->token;
+            return json_decode($response);
         }
     }
 
