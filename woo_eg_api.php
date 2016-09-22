@@ -42,6 +42,10 @@ class Woo_eg_api {
         }
     }
 
+    /**
+     * returns list of books from user's account
+     * @return array books as objects
+     */
     public function getBookList() {
         $curl = curl_init();
 
