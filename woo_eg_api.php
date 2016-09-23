@@ -12,14 +12,15 @@
  */
 class Woo_eg_api {
 
-    public $token;
+    private $token;
+    const URL = 'https://staging.editionguard.com:443/api/v2/';
 
     public function __construct($email, $secret) {
         $curl = curl_init();
 
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://staging.editionguard.com:443/api/v2/obtain-auth-token-by-shared-secret",
+            CURLOPT_URL => self::URL."obtain-auth-token-by-shared-secret",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
@@ -50,7 +51,7 @@ class Woo_eg_api {
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://staging.editionguard.com:443/api/v2/book",
+            CURLOPT_URL => self::URL."book",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
@@ -83,13 +84,13 @@ class Woo_eg_api {
      * @return object Transactions resource
      */
     
-    public function createTransaction($resoureId, $bookData = array()) {
-        $bookData['resource_id'] = $resoureId;
+    public function createTransaction($resourceId, $bookData = array()) {
+        $bookData['resource_id'] = $resourceId;
         $curl = curl_init();
 
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://staging.editionguard.com:443/api/v2/transaction",
+            CURLOPT_URL => self::URL."transaction",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,

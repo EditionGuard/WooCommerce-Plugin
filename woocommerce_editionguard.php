@@ -60,8 +60,10 @@ if ($show_edition_guard) {
         $data = array("email" => $email, "nonce" => $nonce, "hash" => $hash);
         $api = new Woo_eg_api($email, $secret);
         $library = $api->getBookList();
-    } else
+    } else {
         $library = "";
+    }
+    
     $translation_array = array(
         'plugin_path' => $pluginurl = WP_PLUGIN_URL . '/' . str_replace(basename(__FILE__), "", plugin_basename(__FILE__)) . basename(__FILE__),
         'plugin_dir' => $pluginurl = WP_PLUGIN_URL . '/' . str_replace(basename(__FILE__), "", plugin_basename(__FILE__)),
@@ -87,7 +89,7 @@ function woocommerce_ed_product_save($post_id, $post) {
         return;
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
         return $post_id;
-    //if ( ! isset( $_REQUEST['woocommerce_bulk_edit_nonce'] ) || ! wp_verify_nonce( $_REQUEST['woocommerce_bulk_edit_nonce'], 'woocommerce_bulk_edit_nonce' ) ) return $post_id;
+
     if (!current_user_can('edit_post', $post_id))
         return $post_id;
     if ($post->post_type != 'product')
@@ -161,41 +163,20 @@ function woo_eg_process_downloadable_file_urls($file_urls, $product_id, $variati
         
         for ($i = 1; $i <= $item['qty']; $i++) {
             $transaction = $api->createTransaction($resourceId);
-            $files[$i] = array("download_url" => $transaction['download_link'], "name" => "Click here");
+            $files_urls[$i] = array("download_url" => $transaction['download_link'], "name" => "Click here");
         }
     }
     return $file_urls;
 }
 
-add_filter("woocommerce_email_order_items_table", "woo_eg_email_order_items_table", 10, 5);
 
-function woo_eg_email_order_items_table($html, $order) {
-    // If the download links weren't deferred for replacement, just return the HTML.
-    if (!preg_match("/%orderid%/", $html))
-        return $html;
-
-    $linkURL = "http://acs4.editionguard.com/fulfillment/URLLink.acsm";
-    $sharedSecret = get_option('woo_eg_secret');
-
-    // Get the links in the HTML template
-    preg_match_all('/href="([^"]*)"/', $html, $matches);
-    $links = $matches[1];
-    // Place the order id in each then replace original links in the template
-    foreach ($links as $link) {
-        if (preg_match("/%orderid%/", $link)) {
-            $newlink = preg_replace("/%orderid%/", $order->id, $link);
-            $newlink = $linkURL . "?" . $newlink . "&auth=" . hash_hmac("sha1", $newlink, base64_decode($sharedSecret));
-            $newhtml = str_replace($link, $newlink, $html);
-        }
-    }
-    return $newhtml;
-}
 
 add_action('admin_menu', 'register_custom_menu_page_woo_eg', 9999);
 
 function register_custom_menu_page_woo_eg() {
-    add_submenu_page('woocommerce', 'EditionGuard', 'EditionGuard', 'manage_woocommerce', 'woo_edition_guard', 'woo_eg_options');
+    $res = add_submenu_page('woocommerce', 'EditionGuard', 'EditionGuard', 'manage_woocommerce', 'woo_edition_guard', 'woo_eg_options');
 }
+
 
 function woo_eg_options() {
     global $wpdb;
@@ -247,19 +228,5 @@ function woo_eg_options() {
         </form>
     </div>
     <?php
-}
-
-function woo_eg_curl_it($uri, $data, $method = 'POST') {
-    if ($method == 'GET')
-        $uri .= (!empty($data)) ? "?$data" : "";
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $uri);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, ($method == 'GET') ? CURLOPT_HTTPGET : CURLOPT_POST, 1);
-    if ($method != 'GET')
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    $ret = curl_exec($ch);
-    curl_close($ch);
-    return $ret;
 }
 ?>
