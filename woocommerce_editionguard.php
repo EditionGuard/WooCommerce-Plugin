@@ -55,7 +55,7 @@ if ($show_edition_guard) {
     $r_id = get_post_meta($_GET["post"], "_eg_resource_id", true);
     $title = get_post_meta($_GET["post"], "_use_edition_guard_title");
     $drmType = get_post_meta($_GET["post"], "_eg_drm_type");
-    
+
     if (($email != "") && ($hash != "")) {
         $data = array("email" => $email, "nonce" => $nonce, "hash" => $hash);
         $api = new Woo_eg_api($email, $secret);
@@ -63,7 +63,7 @@ if ($show_edition_guard) {
     } else {
         $library = "";
     }
-    
+
     $translation_array = array(
         'plugin_path' => $pluginurl = WP_PLUGIN_URL . '/' . str_replace(basename(__FILE__), "", plugin_basename(__FILE__)) . basename(__FILE__),
         'plugin_dir' => $pluginurl = WP_PLUGIN_URL . '/' . str_replace(basename(__FILE__), "", plugin_basename(__FILE__)),
@@ -112,30 +112,43 @@ add_filter("woocommerce_get_item_downloads", "woo_eg_get_item_downloads", 10, 3)
 function woo_eg_get_item_downloads($files, $item, $order) {
 
     if (get_post_meta($item['product_id'], "_use_edition_guard", true)) {
+        $downloadUrl = $item['item_meta']['_eg_download_url'][0];
+        
+        for ($i = 1; $i <= $item['qty']; $i++) {
+            $files[$i] = array("download_url" => $downloadUrl, "name" => "Click here");
+        }
+    }
+
+    return $files;
+}
+
+add_action('woocommerce_add_order_item_meta', 'woo_eg_add_file_url_to_order_item_meta', 1, 2);
+
+function woo_eg_add_file_url_to_order_item_meta($item_id, $item) {
+    if (get_post_meta($item['product_id'], "_use_edition_guard", true)) {
         $email = get_option('woo_eg_email');
         $secret = get_option('woo_eg_secret');
         $resourceId = get_post_meta($item['product_id'], "_eg_resource_id", true);
         $drmType = get_post_meta($item['product_id'], "_eg_drm_type", true);
         $bookData = array();
         
-        if($drmType == 'Social DRM') {
-            $bookData['watermark_name'] = "$order->billing_first_name "
-                    . "$order->billing_last_name";
-            $bookData['watermark_email'] = $order->billing_email;
-            $bookData['watermark_phone'] = $order->billing_phone;
+        
+
+        if ($drmType == 'Social DRM') {
+            $bookData['watermark_name'] = filter_input(INPUT_POST, "billing_first_name").' '
+                    . filter_input(INPUT_POST, "billing_last_name");
+            $bookData['watermark_email'] = filter_input(INPUT_POST, "billing_email");
+            $bookData['watermark_phone'] = filter_input(INPUT_POST, "billing_phone");
         }
-        
-        
+
         $api = new Woo_eg_api($email, $secret);
-       
-        for ($i = 1; $i <= $item['qty']; $i++) {
-            $transaction = $api->createTransaction($resourceId, $bookData);
-            
-            $files[$i] = array("download_url" => $transaction->download_link, "name" => "Click here");
+        $transaction = $api->createTransaction($resourceId, $bookData);
+        
+
+        if (!empty($transaction->download_link)) {
+            wc_add_order_item_meta($item_id, '_eg_download_url', $transaction->download_link);
         }
     }
-
-    return $files;
 }
 
 // Old filter for 2.0-
@@ -148,19 +161,19 @@ function woo_eg_process_downloadable_file_urls($file_urls, $product_id, $variati
         $resourceId = get_post_meta($item['product_id'], "_eg_resource_id", true);
         $drmType = get_post_meta($item['product_id'], "_eg_drm_type", true);
         $bookData = array();
-        
-        if($drmType == 'Social DRM') {
+
+        if ($drmType == 'Social DRM') {
             $order = new WC_Order($_REQUEST['order']);
             $bookData['watermark_name'] = "$order->billing_first_name "
                     . "$order->billing_last_name";
             $bookData['watermark_email'] = $order->billing_email;
             $bookData['watermark_phone'] = $order->billing_phone;
         }
-        
-        
+
+
         $api = new Woo_eg_api($email, $secret);
-        
-        
+
+
         for ($i = 1; $i <= $item['qty']; $i++) {
             $transaction = $api->createTransaction($resourceId);
             $files_urls[$i] = array("download_url" => $transaction['download_link'], "name" => "Click here");
@@ -169,14 +182,11 @@ function woo_eg_process_downloadable_file_urls($file_urls, $product_id, $variati
     return $file_urls;
 }
 
-
-
 add_action('admin_menu', 'register_custom_menu_page_woo_eg', 9999);
 
 function register_custom_menu_page_woo_eg() {
     $res = add_submenu_page('woocommerce', 'EditionGuard', 'EditionGuard', 'manage_woocommerce', 'woo_edition_guard', 'woo_eg_options');
 }
-
 
 function woo_eg_options() {
     global $wpdb;
@@ -194,9 +204,9 @@ function woo_eg_options() {
     if ($_SESSION["woo_eg_options_updated"]) {
         unset($_SESSION["woo_eg_options_updated"]);
         ?><div id="setting-error-settings_updated" class="updated settings-error"><p><strong>Settings saved.</strong></p></div><?php if ($_REQUEST["return_url"]) { ?><script>jQuery(document).ready(function () {
-                            if (confirm("Do you want to get back to editing your product?"))
-                                window.location.href = '<?php echo base64_decode($_REQUEST["return_url"]) ?>';
-                        })</script> <?php
+                    if (confirm("Do you want to get back to editing your product?"))
+                        window.location.href = '<?php echo base64_decode($_REQUEST["return_url"]) ?>';
+                })</script> <?php
                     }
                 }
                 ?><style>
