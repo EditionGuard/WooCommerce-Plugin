@@ -124,16 +124,21 @@ function woo_eg_add_file_url_to_order_item_meta($item_id, $item) {
             $bookData['watermark_email'] = filter_input(INPUT_POST, "billing_email");
             $bookData['watermark_phone'] = filter_input(INPUT_POST, "billing_phone");
         }
-
+        
+        $links = array();
         $api = new Woo_eg_api($email, $secret);
-        $transaction = $api->createTransaction($resourceId, $bookData);
+        for($i = 0; $i < $item['quantity']; $i++) {
+            $transaction = $api->createTransaction($resourceId, $bookData);
+            $links[] = $transaction->download_link;
+        }
+        
 
 
         if (!empty($transaction->download_link)) {
             if (function_exists("wc_add_order_item_meta")) {
-                wc_add_order_item_meta($item_id, '_eg_download_url', $transaction->download_link);
+                wc_add_order_item_meta($item_id, '_eg_download_url', serialize($links));
             } else {
-                woocommerce_add_order_item_meta($item_id, '_eg_download_url', $transaction->download_link);
+                woocommerce_add_order_item_meta($item_id, '_eg_download_url', serialize($links));
             }
         }
     }
@@ -145,10 +150,10 @@ add_filter("woocommerce_get_item_downloads", "woo_eg_get_item_downloads", 10, 3)
 function woo_eg_get_item_downloads($files, $item, $order) {
 
     if (get_post_meta($item['product_id'], "_use_edition_guard", true)) {
-        $downloadUrl = $item['item_meta']['_eg_download_url'][0];
+        $downloadUrls = unserialize(unserialize($item['item_meta']['_eg_download_url'][0]));
 
         for ($i = 1; $i <= $item['qty']; $i++) {
-            $files[$i] = array("download_url" => $downloadUrl, "name" => "Click here");
+            $files[$i] = array("download_url" => $downloadUrls[$i - 1], "name" => "Click here");
         }
     }
 
@@ -161,10 +166,11 @@ add_filter("woocommerce_get_downloadable_file_urls", "woo_eg_process_downloadabl
 function woo_eg_process_downloadable_file_urls($file_urls, $product_id, $variation_id, $item) {
     
     if (get_post_meta($product_id, "_use_edition_guard", true)) {
-        $downloadUrl = $item['item_meta']['_eg_download_url'][0];
+        $downloadUrls = unserialize(unserialize($item['item_meta']['_eg_download_url'][0]));
+        
 
         for ($i = 1; $i <= $item['qty']; $i++) {
-            $file_urls["Click here #".$i] = $downloadUrl;
+            $file_urls["Click here #".$i] = $downloadUrls[$i - 1];
         }
     }
 
