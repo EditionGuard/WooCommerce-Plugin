@@ -2,18 +2,18 @@
 
 /*
  * Copyright 
- * Vladislav Khomenko
+ * EditionGuard
  */
 
 /**
  * API Interface for editionguard service
  *
- * @author vlad
+ * @author Vladimir Khomenko
  */
 class Woo_eg_api {
 
     private $token;
-    const URL = 'https://staging.editionguard.com:443/api/v2/';
+    const URL = 'https://app.editionguard.com:443/api/v2/';
 
     public function __construct($email, $secret) {
         $curl = curl_init();

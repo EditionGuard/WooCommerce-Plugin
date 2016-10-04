@@ -77,6 +77,11 @@ Please visit the [our official FAQ](http://www.editionguard.com/help#faq "Editio
 3. Download page for a successful order.
 
 == Changelog ==
+= 2.0.0 =
+Added support for Social DRM (watermarking) enabled books.
+Plugin now uses our V2 Rest API for shorter, better formatted links.
+Removed book upload functionality. 
+All book uploads need to be done on the EditionGuard app going forward.
 = 1.1.4 =
 Fixed a referencing issue with post urls.
 = 1.1.3 =
