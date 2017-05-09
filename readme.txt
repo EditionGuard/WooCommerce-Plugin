@@ -1,6 +1,6 @@
 === EditionGuard for WooCommerce - eBook Sales with DRM  ===
 Contributors: EditionGuard
-Donate link: http://www.editionguard.com
+Donate link: https://www.editionguard.com
 Tags: ebook,drm,epub,pdf,sales,woocommerce,e-book
 Requires at least: 3.0.1
 Tested up to: 3.8.1
@@ -77,6 +77,8 @@ Please visit the [our official FAQ](http://www.editionguard.com/help#faq "Editio
 3. Download page for a successful order.
 
 == Changelog ==
+= 2.0.3 =
+WooCommerce 3.x support added.
 = 2.0.0 =
 Added support for Social DRM (watermarking) enabled books.
 Plugin now uses our V2 Rest API for shorter, better formatted links.
