@@ -77,8 +77,14 @@ Please visit the [our official FAQ](http://www.editionguard.com/help#faq "Editio
 3. Download page for a successful order.
 
 == Changelog ==
+= 3.0.0 =
+WooCommerce 3.x compatibility update.
 = 2.0.3 =
-WooCommerce 3.x support added.
+Updated reference for Social DRM.
+= 2.0.2 =
+Get book list should receive all books on account.
+= 2.0.1 =
+Fixed API url.
 = 2.0.0 =
 Added support for Social DRM (watermarking) enabled books.
 Plugin now uses our V2 Rest API for shorter, better formatted links.

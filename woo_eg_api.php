@@ -51,7 +51,7 @@ class Woo_eg_api {
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => self::URL."book",
+            CURLOPT_URL => self::URL."book?page_size=100000",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
