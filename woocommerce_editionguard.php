@@ -1,11 +1,11 @@
 <?php
 /*
   Plugin Name: EditionGuard for WooCommerce - eBook Sales with DRM
-  Plugin URI: http://www.editionguard.com
+  Plugin URI: https://www.editionguard.com
   Description: A plugin that allows integration between your WooCommerce store and EditionGuard
-  Version: 2.0.0
+  Version: 2.0.3
   Author: EditionGuard Dev Team <support@editionguard.com>
-  Author URI: http://www.editionguard.com
+  Author URI: https://www.editionguard.com
  */
 
 include( plugin_dir_path(__FILE__) . 'woo_eg_api.php');
@@ -28,7 +28,9 @@ $post_url = array_pop($post_url_ref);
 $post_new_url = array_pop($post_new_url_ref);
 
 if (($_SERVER["SCRIPT_NAME"] == $post_url) && $_GET["post"]) {
+    
     $post = get_post($_GET["post"]);
+    
     if ($post->post_type == "product")
         $show_edition_guard = true;
 }
@@ -36,6 +38,8 @@ elseif (($_SERVER["SCRIPT_NAME"] == $post_new_url) && ($_GET["post_type"] == "pr
     $show_edition_guard = true;
 else
     $show_edition_guard = false;
+
+
 
 if ($show_edition_guard) {
     wp_register_script('woocommerce_editionguard', plugins_url('/woocommerce_editionguard.js', __FILE__), array("jquery"));
@@ -58,7 +62,9 @@ if ($show_edition_guard) {
 
     if (($email != "") && ($hash != "")) {
         $data = array("email" => $email, "nonce" => $nonce, "hash" => $hash);
+        
         $api = new Woo_eg_api($email, $secret);
+        
         $library = $api->getBookList();
     } else {
         $library = "";
@@ -118,7 +124,7 @@ function woo_eg_add_file_url_to_order_item_meta($item_id, $item) {
 
 
 
-        if ($drmType == 'Social DRM') {
+        if ($drmType == 'Social DRM' || $drmType == "EditionMark") {
             $bookData['watermark_name'] = filter_input(INPUT_POST, "billing_first_name") . ' '
                     . filter_input(INPUT_POST, "billing_last_name");
             $bookData['watermark_email'] = filter_input(INPUT_POST, "billing_email");
@@ -150,7 +156,9 @@ add_filter("woocommerce_get_item_downloads", "woo_eg_get_item_downloads", 10, 3)
 function woo_eg_get_item_downloads($files, $item, $order) {
 
     if (get_post_meta($item['product_id'], "_use_edition_guard", true)) {
-        $downloadUrls = unserialize(unserialize($item['item_meta']['_eg_download_url'][0]));
+        
+        $downloadUrls = getItemDownloadUrls($item);
+        
 
         for ($i = 1; $i <= $item['qty']; $i++) {
             $files[$i] = array("download_url" => $downloadUrls[$i - 1], "name" => "Click here");
@@ -166,7 +174,7 @@ add_filter("woocommerce_get_downloadable_file_urls", "woo_eg_process_downloadabl
 function woo_eg_process_downloadable_file_urls($file_urls, $product_id, $variation_id, $item) {
     
     if (get_post_meta($product_id, "_use_edition_guard", true)) {
-        $downloadUrls = unserialize(unserialize($item['item_meta']['_eg_download_url'][0]));
+        $downloadUrls = getItemDownloadUrls($item);
         
 
         for ($i = 1; $i <= $item['qty']; $i++) {
@@ -233,5 +241,15 @@ function woo_eg_options() {
         </form>
     </div>
     <?php
+}
+
+function getItemDownloadUrls($item) {
+    if(WC()->version >= '3.0.0') {
+        $downloadUrls = unserialize($item['item_meta']['_eg_download_url']);
+    } else {
+        $downloadUrls = unserialize(unserialize($item['item_meta']['_eg_download_url'][0]));
+
+    }
+    return $downloadUrls;
 }
 ?>
