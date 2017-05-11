@@ -77,6 +77,8 @@ Please visit the [our official FAQ](http://www.editionguard.com/help#faq "Editio
 3. Download page for a successful order.
 
 == Changelog ==
+= 3.0.0 =
+WooCommerce 3.x compatibility update.
 = 2.0.3 =
 Updated reference for Social DRM.
 = 2.0.2 =
