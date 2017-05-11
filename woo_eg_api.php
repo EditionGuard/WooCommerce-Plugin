@@ -8,7 +8,7 @@
 /**
  * API Interface for editionguard service
  *
- * @author Vladimir Khomenko
+ * @author Vladislav Khomenko
  */
 class Woo_eg_api {
 
