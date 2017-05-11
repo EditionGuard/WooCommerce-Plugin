@@ -28,9 +28,9 @@ $post_url = array_pop($post_url_ref);
 $post_new_url = array_pop($post_new_url_ref);
 
 if (($_SERVER["SCRIPT_NAME"] == $post_url) && $_GET["post"]) {
-    
+
     $post = get_post($_GET["post"]);
-    
+
     if ($post->post_type == "product")
         $show_edition_guard = true;
 }
@@ -62,9 +62,9 @@ if ($show_edition_guard) {
 
     if (($email != "") && ($hash != "")) {
         $data = array("email" => $email, "nonce" => $nonce, "hash" => $hash);
-        
+
         $api = new Woo_eg_api($email, $secret);
-        
+
         $library = $api->getBookList();
     } else {
         $library = "";
@@ -130,14 +130,14 @@ function woo_eg_add_file_url_to_order_item_meta($item_id, $item) {
             $bookData['watermark_email'] = filter_input(INPUT_POST, "billing_email");
             $bookData['watermark_phone'] = filter_input(INPUT_POST, "billing_phone");
         }
-        
+
         $links = array();
         $api = new Woo_eg_api($email, $secret);
-        for($i = 0; $i < $item['quantity']; $i++) {
+        for ($i = 0; $i < $item['quantity']; $i++) {
             $transaction = $api->createTransaction($resourceId, $bookData);
             $links[] = $transaction->download_link;
         }
-        
+
 
 
         if (!empty($transaction->download_link)) {
@@ -156,9 +156,9 @@ add_filter("woocommerce_get_item_downloads", "woo_eg_get_item_downloads", 10, 3)
 function woo_eg_get_item_downloads($files, $item, $order) {
 
     if (get_post_meta($item['product_id'], "_use_edition_guard", true)) {
-        
+
         $downloadUrls = getItemDownloadUrls($item);
-        
+
 
         for ($i = 1; $i <= $item['qty']; $i++) {
             $files[$i] = array("download_url" => $downloadUrls[$i - 1], "name" => "Click here");
@@ -172,13 +172,13 @@ function woo_eg_get_item_downloads($files, $item, $order) {
 add_filter("woocommerce_get_downloadable_file_urls", "woo_eg_process_downloadable_file_urls", 10, 4);
 
 function woo_eg_process_downloadable_file_urls($file_urls, $product_id, $variation_id, $item) {
-    
+
     if (get_post_meta($product_id, "_use_edition_guard", true)) {
         $downloadUrls = getItemDownloadUrls($item);
-        
+
 
         for ($i = 1; $i <= $item['qty']; $i++) {
-            $file_urls["Click here #".$i] = $downloadUrls[$i - 1];
+            $file_urls["Click here #" . $i] = $downloadUrls[$i - 1];
         }
     }
 
@@ -210,9 +210,9 @@ function woo_eg_options() {
                             if (confirm("Do you want to get back to editing your product?"))
                                 window.location.href = '<?php echo base64_decode($_REQUEST["return_url"]) ?>';
                         })</script> <?php
-        }
-    }
-    ?><style>
+                    }
+                }
+                ?><style>
         .wrap label {line-height: 24px;margin-right:10px}
         .wrap input {}
         .wrap li {display: table-cell; vertical-align: top;}
@@ -244,12 +244,44 @@ function woo_eg_options() {
 }
 
 function getItemDownloadUrls($item) {
-    if(WC()->version >= '3.0.0') {
+    if (WC()->version >= '3.0.0') {
         $downloadUrls = unserialize($item['item_meta']['_eg_download_url']);
     } else {
         $downloadUrls = unserialize(unserialize($item['item_meta']['_eg_download_url'][0]));
-
     }
     return $downloadUrls;
+}
+
+add_filter("woocommerce_customer_get_downloadable_products", "show_links_in_my_account");
+
+function show_links_in_my_account($downloads) {
+    $statuses = wc_get_order_statuses();
+
+    $customer_orders = get_posts(array(
+        'numberposts' => -1,
+        'meta_key' => '_customer_user',
+        'meta_value' => get_current_user_id(),
+        'post_type' => wc_get_order_types(),
+        'post_status' => array('wc-processing', 'wc-completed'),
+    ));
+
+    foreach ($customer_orders as $post) {
+        $order = WC_Order_Factory::get_order($post->ID);
+        $items = $order->get_items();
+        new WC_Order_Item_Product();
+        foreach ($items as $id => $item) {
+            $urls = getItemDownloadUrls($item);
+            foreach ($urls as $url) {
+                $downloads[] = array(
+                    'download_url' => $url,
+                    'product_name' => $item['name'],
+                    'file' => array('name' => 'Download '.$item['name']),
+                    'product_id' => $item['product_id']
+                );
+            }
+        }
+    }
+
+    return $downloads;
 }
 ?>
