@@ -77,6 +77,10 @@ Please visit the [our official FAQ](http://www.editionguard.com/help#faq "Editio
 3. Download page for a successful order.
 
 == Changelog ==
+= 3.0.2 =
+Generate download links for manual orders through WooCommerce admin.
+= 3.0.1 =
+Download links are now visible under Account > My Downloads page.
 = 3.0.0 =
 WooCommerce 3.x compatibility update.
 = 2.0.3 =
