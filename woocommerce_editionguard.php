@@ -284,4 +284,14 @@ function show_links_in_my_account($downloads) {
 
     return $downloads;
 }
-?>
+
+add_action('woocommerce_new_order_item', 'woo_eg_add_file_url_to_manual_order', 9, 2);
+
+function woo_eg_add_file_url_to_manual_order($item_id, $item) {
+    if(is_admin()) {
+        woo_eg_add_file_url_to_order_item_meta($item_id, $item);
+    }
+}
+
+
+    ?>
