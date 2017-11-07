@@ -292,6 +292,14 @@ function woo_eg_add_file_url_to_manual_order($item_id, $item) {
         woo_eg_add_file_url_to_order_item_meta($item_id, $item);
     }
 }
+add_filter('woocommerce_product_file', 'woo_eg_get_product_file', 7, 2);
 
+function woo_eg_get_product_file($file, $product) {
+	
+	if(!$file) {
+		$id = get_post_meta($product->get_id(), "_eg_resource_id", true);
+		return $id;
+	}
+}
 
     ?>
