@@ -77,6 +77,10 @@ Please visit the [our official FAQ](http://www.editionguard.com/help#faq "Editio
 3. Download page for a successful order.
 
 == Changelog ==
+= 3.1.1 =
+Dropdown list showing e-books will now show all books on account. (Temporary fix, this will become a combobox shortly.)
+= 3.1.0 =
+WooCommerce 3.2.x compatibility update.
 = 3.0.2 =
 Generate download links for manual orders through WooCommerce admin.
 = 3.0.1 =
