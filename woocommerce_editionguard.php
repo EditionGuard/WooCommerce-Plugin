@@ -44,8 +44,12 @@ else
 if ($show_edition_guard) {
     wp_register_script('woocommerce_editionguard', plugins_url('/woocommerce_editionguard.js', __FILE__), array("jquery"));
     wp_enqueue_script('woocommerce_editionguard');
-    wp_register_style('woocommerce_editionguard', plugins_url('/woocommerce_editionguard.css', __FILE__));
+    wp_register_script('jquery-ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js');
+    wp_enqueue_script('jquery-ui');
+    wp_register_style('woocommerce_editionguard', plugins_url('/woocommerce_editionguard.css', __FILE__), array('jquery-ui'));
     wp_enqueue_style('woocommerce_editionguard');
+    wp_register_style('jquery-ui', '//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css');
+    wp_enqueue_style('jquery-ui');
     $secret = get_option('woo_eg_secret');
     $nonce = rand(1000000, 999999999);
     $email = get_option('woo_eg_email');
