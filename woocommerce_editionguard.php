@@ -3,7 +3,7 @@
   Plugin Name: EditionGuard for WooCommerce - eBook Sales with DRM
   Plugin URI: https://www.editionguard.com
   Description: A plugin that allows integration between your WooCommerce store and EditionGuard
-  Version: 3.2.0
+  Version: 3.3.0
   Author: EditionGuard Dev Team <support@editionguard.com>
   Author URI: https://www.editionguard.com
  */
@@ -299,7 +299,7 @@ function woo_eg_add_file_url_to_manual_order($item_id, $item) {
 add_filter('woocommerce_product_file', 'woo_eg_get_product_file', 7, 2);
 
 function woo_eg_get_product_file($file, $product) {
-	
+
 	if(!$file) {
 		$id = get_post_meta($product->get_id(), "_eg_resource_id", true);
 		return $id;

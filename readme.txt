@@ -3,7 +3,7 @@ Contributors: EditionGuard
 Donate link: https://www.editionguard.com
 Tags: ebook,drm,epub,pdf,sales,woocommerce,e-book
 Requires at least: 3.0.1
-Tested up to: 4.9.6
+Tested up to: 5.0.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -14,9 +14,9 @@ This Wordpress plugin allows you to sell eBooks using WooCommerce 2.1+, while pr
 
 [Watch Screencast on Youtube for Setup Instructions](http://www.youtube.com/watch?v=vpZv8miQPdM "EditionGuard WooCommerce eBook DRM Plugin Screencast")
 
-This plugin is a complete eBook sales solution, which is fully integrated with our cost-effective EditionGuard eBook DRM service. 
+This plugin is a complete eBook sales solution, which is fully integrated with our cost-effective EditionGuard eBook DRM service.
 
-By following just a few simple steps, you can immediately start selling your eBooks on your WooCommerce site with industry standard eBook DRM protection based on Adobe Content Server. 
+By following just a few simple steps, you can immediately start selling your eBooks on your WooCommerce site with industry standard eBook DRM protection based on Adobe Content Server.
 
 1. First make sure you have WooCommerce installed and properly configured. This plugin will not work without WooCommerce!
 2. Login to your admin interface and install the plugin
@@ -25,7 +25,7 @@ By following just a few simple steps, you can immediately start selling your eBo
 5. Upload your eBook in ePub or PDF format, or choose an existing eBook on your EditionGuard account.
 6. Start making money!
 
-Once your customers buy one of your eBooks and make payment for it, they’ll automatically receive a secure download link for the eBook through email, which will also be displayed on the transaction result page. This download link can then be opened using [Adobe Digital Editions](http://www.adobe.com/products/digital-editions.html "Adobe Digital Editions") on your Mac or PC. It can also be opened on your iOS or Android mobile device using [one of the apps listed here](http://blogs.adobe.com/digitalpublishing/supported-devices "EditionGuard DRM Supported Devices and Apps"). 
+Once your customers buy one of your eBooks and make payment for it, they’ll automatically receive a secure download link for the eBook through email, which will also be displayed on the transaction result page. This download link can then be opened using [Adobe Digital Editions](http://www.adobe.com/products/digital-editions.html "Adobe Digital Editions") on your Mac or PC. It can also be opened on your iOS or Android mobile device using [one of the apps listed here](http://blogs.adobe.com/digitalpublishing/supported-devices "EditionGuard DRM Supported Devices and Apps").
 
 [Please see this visual download guide](http://www.editionguard.com/images/download-guide.jpg "EditionGuard DRM Download Guide") for a step by step capture of the download process. You are free to use this visual on your websites.
 
@@ -77,6 +77,10 @@ Please visit the [our official FAQ](http://www.editionguard.com/help#faq "Editio
 3. Download page for a successful order.
 
 == Changelog ==
+= 3.3.0 =
+Wordpress 5.0.1 Compatibility Check.
+Added Header identifier in API requests to EditionGuard.
+Increased page_size of book list for larger accounts.
 = 3.2.0 =
 E-book selection has become a combo box for easier use.
 = 3.1.1 =
@@ -98,7 +102,7 @@ Fixed API url.
 = 2.0.0 =
 Added support for Social DRM (watermarking) enabled books.
 Plugin now uses our V2 Rest API for shorter, better formatted links.
-Removed book upload functionality. 
+Removed book upload functionality.
 All book uploads need to be done on the EditionGuard app going forward.
 = 1.1.4 =
 Fixed a referencing issue with post urls.

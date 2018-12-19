@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 
+ * Copyright
  * EditionGuard
  */
 
@@ -28,8 +28,9 @@ class Woo_eg_api {
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => array('email' => $email, 'shared_secret' => $secret),
+            CURLOPT_HTTPHEADER => array("EGIID: WooCommerce")
         ));
-        
+
 
         $response = curl_exec($curl);
 
@@ -52,7 +53,7 @@ class Woo_eg_api {
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => self::URL."book?page_size=10000",
+            CURLOPT_URL => self::URL."book?page_size=100000",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
@@ -60,7 +61,8 @@ class Woo_eg_api {
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => array(
-                "authorization: Token $this->token"
+                "authorization: Token $this->token",
+                "EGIID: WooCommerce"
             ),
         ));
 
@@ -77,14 +79,14 @@ class Woo_eg_api {
             return json_decode($response)->results;
         }
     }
-    
+
     /**
      * Create new transaction
      * @param string $resourceId book's resource_id
      * @param array $bookData data of e-book
      * @return object Transactions resource
      */
-    
+
     public function createTransaction($resourceId, $bookData = array()) {
         $bookData['resource_id'] = $resourceId;
         $curl = curl_init();
@@ -100,7 +102,8 @@ class Woo_eg_api {
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => $bookData,
             CURLOPT_HTTPHEADER => array(
-                "authorization: Token $this->token"
+                "authorization: Token $this->token",
+                "EGIID: WooCommerce"
             ),
         ));
 
