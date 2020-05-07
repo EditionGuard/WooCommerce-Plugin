@@ -17,7 +17,7 @@ class Woo_eg_api {
 
     public function __construct($email, $secret) {
         $curl = curl_init();
-
+        $headers = array("EGIID: WooCommerce");
 
         curl_setopt_array($curl, array(
             CURLOPT_URL => self::URL."obtain-auth-token-by-shared-secret",
@@ -27,8 +27,7 @@ class Woo_eg_api {
             CURLOPT_TIMEOUT => 30,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => array('email' => $email, 'shared_secret' => $secret),
-            CURLOPT_HTTPHEADER => array("EGIID: WooCommerce")
+            CURLOPT_POSTFIELDS => array('email' => $email, 'shared_secret' => $secret)
         ));
 
 
@@ -51,7 +50,7 @@ class Woo_eg_api {
      */
     public function getBookList() {
         $curl = curl_init();
-
+        $headers = array("Authorization: token $this->token", "EGIID: WooCommerce");
         curl_setopt_array($curl, array(
             CURLOPT_URL => self::URL."book?page_size=100000",
             CURLOPT_RETURNTRANSFER => true,
@@ -60,10 +59,7 @@ class Woo_eg_api {
             CURLOPT_TIMEOUT => 30,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
-                "authorization: Token $this->token",
-                "EGIID: WooCommerce"
-            ),
+            CURLOPT_HTTPHEADER => $headers
         ));
 
         $response = curl_exec($curl);
@@ -90,7 +86,7 @@ class Woo_eg_api {
     public function createTransaction($resourceId, $bookData = array()) {
         $bookData['resource_id'] = $resourceId;
         $curl = curl_init();
-
+        $headers = array("Authorization: token $this->token", "EGIID: WooCommerce");
 
         curl_setopt_array($curl, array(
             CURLOPT_URL => self::URL."transaction",
@@ -101,10 +97,7 @@ class Woo_eg_api {
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => $bookData,
-            CURLOPT_HTTPHEADER => array(
-                "authorization: Token $this->token",
-                "EGIID: WooCommerce"
-            ),
+            CURLOPT_HTTPHEADER => $headers
         ));
 
         $response = curl_exec($curl);
