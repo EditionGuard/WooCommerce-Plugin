@@ -3,7 +3,7 @@ Contributors: EditionGuard
 Donate link: https://www.editionguard.com
 Tags: ebook,drm,epub,pdf,sales,woocommerce,e-book
 Requires at least: 3.0.1
-Tested up to: 5.0.1
+Tested up to: 5.5.0
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -77,6 +77,8 @@ Please visit the [our official FAQ](http://www.editionguard.com/help#faq "Editio
 3. Download page for a successful order.
 
 == Changelog ==
+= 3.3.1 =
+Wordpress 5.5 Compatibility Check.
 = 3.3.0 =
 Wordpress 5.0.1 Compatibility Check.
 Added Header identifier in API requests to EditionGuard.
