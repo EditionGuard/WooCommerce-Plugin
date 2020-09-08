@@ -9,6 +9,8 @@
  */
 
 include( plugin_dir_path(__FILE__) . 'woo_eg_api.php');
+include( plugin_dir_path(__FILE__) . 'woo_eg_variable_product.php');
+
 
 
 if (@$_REQUEST["woo_ed_resource_id"]) {
@@ -42,6 +44,11 @@ else
 
 
 if ($show_edition_guard) {
+    $secret = get_option('woo_eg_secret');
+    $email = get_option('woo_eg_email');
+    $editionguard_api= new Woo_eg_api($email, $secret);
+    $GLOBALS['editionguard_api'] = $editionguard_api;
+    
     wp_register_script('woocommerce_editionguard', plugins_url('/woocommerce_editionguard.js', __FILE__), array("jquery"));
     wp_enqueue_script('woocommerce_editionguard');
     wp_register_script('jquery-ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js');
@@ -50,9 +57,9 @@ if ($show_edition_guard) {
     wp_enqueue_style('woocommerce_editionguard');
     wp_register_style('jquery-ui', '//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css');
     wp_enqueue_style('jquery-ui');
-    $secret = get_option('woo_eg_secret');
+    
     $nonce = rand(1000000, 999999999);
-    $email = get_option('woo_eg_email');
+    
     if ($email == "")
         $email = "";
     if ($secret)
@@ -67,9 +74,8 @@ if ($show_edition_guard) {
     if (($email != "") && ($hash != "")) {
         $data = array("email" => $email, "nonce" => $nonce, "hash" => $hash);
 
-        $api = new Woo_eg_api($email, $secret);
 
-        $library = $api->getBookList();
+        $library = $editionguard_api->getBookList();
     } else {
         $library = "";
     }
@@ -114,16 +120,28 @@ function woocommerce_ed_product_save($post_id, $post) {
 
     if (!empty($_REQUEST['_eg_title']))
         update_post_meta($post_id, '_use_edition_guard_title', stripslashes($_REQUEST['_eg_title']));
+    
+    foreach (Woo_eg_variable_product::custom_fields as $field) {
+        if(isset($_REQUEST[$field]) && is_array($_REQUEST[$field])) {
+            WC_Meta_Box_Product_Data::save_variations($post_id, $post);
+            break;
+        }
+    }
 }
 
 add_action('woocommerce_add_order_item_meta', 'woo_eg_add_file_url_to_order_item_meta', 1, 2);
 
 function woo_eg_add_file_url_to_order_item_meta($item_id, $item) {
-    if (get_post_meta($item['product_id'], "_use_edition_guard", true)) {
+    if(isset($item['variation_id']) && $item['variation_id']) {
+        $post_id = $item['variation_id'];
+    } else {
+        $post_id = $item['product_id'];
+    }
+    if (get_post_meta($post_id, "_use_edition_guard", true)) {
         $email = get_option('woo_eg_email');
         $secret = get_option('woo_eg_secret');
-        $resourceId = get_post_meta($item['product_id'], "_eg_resource_id", true);
-        $drmType = get_post_meta($item['product_id'], "_eg_drm_type", true);
+        $resourceId = get_post_meta($post_id, "_eg_resource_id", true);
+        $drmType = get_post_meta($post_id, "_eg_drm_type", true);
         $bookData = array();
 
 
@@ -305,5 +323,10 @@ function woo_eg_get_product_file($file, $product) {
 		return $id;
 	}
 }
+
+$variableProduct = new Woo_eg_variable_product();
+$variableProduct->init();
+
+
 
     ?>

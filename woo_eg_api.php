@@ -13,6 +13,7 @@
 class Woo_eg_api {
 
     private $token;
+
     const URL = 'https://app.editionguard.com:443/api/v2/';
 
     public function __construct($email, $secret) {
@@ -20,7 +21,7 @@ class Woo_eg_api {
         $headers = array("EGIID: WooCommerce");
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => self::URL."obtain-auth-token-by-shared-secret",
+            CURLOPT_URL => self::URL . "obtain-auth-token-by-shared-secret",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
@@ -28,7 +29,7 @@ class Woo_eg_api {
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => array('email' => $email, 'shared_secret' => $secret)
-        ));
+            ));
 
 
         $response = curl_exec($curl);
@@ -49,30 +50,37 @@ class Woo_eg_api {
      * @return array books as objects
      */
     public function getBookList() {
-        $curl = curl_init();
-        $headers = array("Authorization: token $this->token", "EGIID: WooCommerce");
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => self::URL."book?page_size=100000",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => $headers
-        ));
+        $list = wp_cache_get("book_list_$this->token", 'woo_eg');
+        if (empty($list)) {
+            $curl = curl_init();
+            $headers = array("Authorization: token $this->token", "EGIID: WooCommerce");
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => self::URL . "book?page_size=100000",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTPHEADER => $headers
+            ));
 
-        $response = curl_exec($curl);
+            $response = curl_exec($curl);
 
 
-        $err = curl_error($curl);
+            $err = curl_error($curl);
 
-        curl_close($curl);
+            curl_close($curl);
 
-        if ($err) {
-            echo "cURL Error #:" . $err;
+            if ($err) {
+                echo "cURL Error #:" . $err;
+            } else {
+                $list = json_decode($response)->results;
+                wp_cache_set("book_list_$this->token", $list, 'woo_eg');
+                return $list;
+            }
         } else {
-            return json_decode($response)->results;
+            return $list;
         }
     }
 
@@ -82,14 +90,13 @@ class Woo_eg_api {
      * @param array $bookData data of e-book
      * @return object Transactions resource
      */
-
     public function createTransaction($resourceId, $bookData = array()) {
         $bookData['resource_id'] = $resourceId;
         $curl = curl_init();
         $headers = array("Authorization: token $this->token", "EGIID: WooCommerce");
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => self::URL."transaction",
+            CURLOPT_URL => self::URL . "transaction",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
