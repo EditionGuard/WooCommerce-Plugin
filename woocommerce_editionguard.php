@@ -3,7 +3,7 @@
   Plugin Name: EditionGuard for WooCommerce - eBook Sales with DRM
   Plugin URI: https://www.editionguard.com
   Description: A plugin that allows integration between your WooCommerce store and EditionGuard
-  Version: 3.3.1
+  Version: 3.4.1
   Author: EditionGuard Dev Team <support@editionguard.com>
   Author URI: https://www.editionguard.com
  */
