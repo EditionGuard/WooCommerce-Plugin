@@ -176,8 +176,12 @@ function woo_eg_add_file_url_to_order_item_meta($item_id, $item) {
 add_filter("woocommerce_get_item_downloads", "woo_eg_get_item_downloads", 10, 3);
 
 function woo_eg_get_item_downloads($files, $item, $order) {
-
-    if (get_post_meta($item['product_id'], "_use_edition_guard", true)) {
+    if(isset($item['variation_id']) && $item['variation_id']) {
+        $post_id = $item['variation_id'];
+    } else {
+        $post_id = $item['product_id'];
+    }
+    if (get_post_meta($post_id, "_use_edition_guard", true)) {
 
         $downloadUrls = getItemDownloadUrls($item);
 

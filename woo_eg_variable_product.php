@@ -8,6 +8,7 @@
 class Woo_eg_variable_product {
 
     const custom_fields = [
+        '_use_edition_guard',
         '_use_edition_guard_title',
         '_eg_resource_id',
         '_eg_drm_type'
@@ -61,7 +62,7 @@ class Woo_eg_variable_product {
         else
             $value = 'value="' . $woo_eg->r_id . '" ';
 
-        $input = '<input type="hidden" name="_eg_resource_id[' . $loop . ']" class="_eg_resource_id" ' . $value . 'placeholder="EditionGuard Resource ID" />' . '<input type="hidden" name="_use_edition_guard_title[' . $loop . ']" class="_eg_title"/>' . '<input type="hidden" name="_eg_drm_type[' . $loop . ']" class="_eg_drm_type" value="' . $woo_eg->drm_type . '"/>';
+        $input = '<input type="hidden" name="_eg_resource_id[' . $loop . ']" class="_eg_resource_id" ' . $value . 'placeholder="EditionGuard Resource ID" />' . '<input type="hidden" name="_use_edition_guard_title[' . $loop . ']" class="_eg_title" value="'.$woo_eg->title.'" />' . '<input type="hidden" name="_eg_drm_type[' . $loop . ']" class="_eg_drm_type" value="' . $woo_eg->drm_type . '"/>';
         $p2 = $input;
 //
         $label = '<p class="form-field e-book"><label>Choose eBook: </label>';
@@ -89,6 +90,7 @@ class Woo_eg_variable_product {
     }
 
     public function save($variation_id, $i) {
+        
         foreach (self::custom_fields as $name) {
             if ($name == '_use_edition_guard') {
                 update_post_meta($variation_id, $name, stripslashes($_POST[$name][$i]));
