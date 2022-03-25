@@ -300,6 +300,7 @@ function show_links_in_my_account($downloads) {
             foreach ($urls as $url) {
                 $downloads[] = array(
                     'download_url' => $url,
+                    'download_name' => 'Download',
                     'product_name' => $item['name'],
                     'file' => array('name' => 'Download '.$item['name']),
                     'product_id' => $item['product_id']
